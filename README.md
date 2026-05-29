@@ -1,36 +1,105 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CS408 - 考研计算机408统考学习平台
 
-## Getting Started
+面向考研408的计算机专业课学习系统，覆盖数据结构、计算机组成原理、操作系统、计算机网络四科。系统本身作为"老师"，通过结构化知识讲解、逐行代码分析、交互式算法动画帮助理解核心概念，而非单纯的题库。
 
-First, run the development server:
+## 四科内容
+
+### 数据结构
+
+| 章节 | 核心内容 |
+|------|----------|
+| 线性表 | 顺序表、单链表、双链表、循环链表、静态链表 |
+| 栈和队列 | 栈实现、循环队列、双端队列、括号匹配、表达式求值、矩阵压缩 |
+| 串 | BF算法、KMP算法、next/nextval数组 |
+| 树与二叉树 | 遍历、线索二叉树、树/森林转换、哈夫曼编码、并查集 |
+| 图 | DFS/BFS、Prim、Kruskal、Dijkstra、Floyd、拓扑排序 |
+| 查找 | 顺序查找、折半查找、BST、AVL树、B树/B+树 |
+| 排序 | 插入、交换、选择、归并、基数排序 |
+
+### 计算机组成原理
+
+| 章节 | 核心内容 |
+|------|----------|
+| 数据表示 | 原码/补码/移码、IEEE 754浮点数、溢出判断 |
+| 运算器 | 加减运算、乘除运算、ALU设计 |
+| 存储系统 | Cache映射、虚拟存储、磁盘调度 |
+| 指令系统 | 指令格式、寻址方式、CISC/RISC |
+| CPU | 数据通路、控制器、流水线 |
+| 总线与I/O | 总线仲裁、中断、DMA |
+
+### 操作系统
+
+| 章节 | 核心内容 |
+|------|----------|
+| 进程管理 | 进程状态、进程调度（FCFS/SJF/RR/优先级） |
+| 进程同步 | 互斥、信号量、经典同步问题 |
+| 死锁 | 银行家算法、死锁检测与恢复 |
+| 内存管理 | 分页、分段、页面置换（FIFO/LRU/OPT） |
+| 文件系统 | 文件分配、目录结构、磁盘调度 |
+
+### 计算机网络
+
+| 章节 | 核心内容 |
+|------|----------|
+| 物理层与数据链路层 | 滑动窗口、差错控制、CSMA/CD |
+| 网络层 | IP编址、子网划分、路由算法 |
+| 传输层 | TCP三次握手/四次挥手、拥塞控制、流量控制 |
+| 应用层 | DNS、HTTP、DHCP、FTP |
+
+## 特色
+
+- 以教学为核心，每个知识点都有"为什么"的解释
+- 24个交互式可视化组件：排序动画、树结构、图遍历、拥塞控制、进程状态机等
+- 算法步骤演示支持自动播放、速度控制、键盘快捷键
+- 代码逐行讲解，语法高亮 + 行号
+- 内嵌 AI 问答，可针对当前课程内容提问
+- 深色主题，localStorage 记录学习进度
+
+## 开发
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+在 `.env.local` 中配置 API Key：
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+DEEPSEEK_API_KEY=your_key_here
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 技术栈
 
-## Learn More
+- Next.js 16 (App Router) + React 19 + TypeScript
+- Tailwind CSS v4 + shadcn/ui
+- framer-motion（算法动画）
+- prism-react-renderer（代码高亮）
+- react-markdown + remark-gfm（内容渲染）
+- DeepSeek API（流式对话）
+- localStorage（进度持久化）
 
-To learn more about Next.js, take a look at the following resources:
+## 项目结构
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+src/
+├── app/
+│   ├── [subject]/              # 四科路由 (ds/co/os/cn)
+│   │   ├── chapters/[chapterId]  # 章节页
+│   │   ├── lessons/[lessonId]    # 课程详情页
+│   │   ├── practice/[id]         # 练习页
+│   │   ├── chat/                 # AI 问答
+│   │   └── tools/                # 学科工具
+│   └── api/                    # API 路由
+├── components/
+│   ├── ui/                     # shadcn/ui 基础组件
+│   ├── state-renderers/        # 24个可视化渲染器
+│   ├── layout/                 # 侧边栏、导航
+│   └── chat/                   # AI 对话面板
+├── data/
+│   ├── ds/                     # 数据结构课程数据
+│   ├── cn/                     # 计算机网络课程数据
+│   ├── os/                     # 操作系统课程数据
+│   └── co/                     # 计算机组成原理课程数据
+├── lib/                        # 工具函数
+└── types/                      # TypeScript 类型
+```

@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run build *)",
+      "Bash(npm run build)",
+      "Bash(npm run type-check)",
+      "Bash(npm run type-check *)",
+      "Bash(npm run test)",
+      "Bash(npm list *)",
+      "Bash(npm view *)",
+      "Bash(npm --prefix *)"
+    ]
+  }
+}
