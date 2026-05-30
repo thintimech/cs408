@@ -82,6 +82,7 @@ function WalkthroughSteps({ steps }: { steps: AlgorithmStep[] }) {
           <select
             value={speed}
             onChange={(e) => setSpeed(Number(e.target.value))}
+            aria-label="播放速度"
             className="text-xs bg-secondary rounded px-1 py-1 border-none"
           >
             <option value={1200}>慢</option>
@@ -162,10 +163,14 @@ export default function LessonPage() {
   const initialReadRef = useRef<Set<string> | null>(null);
 
   const allLessons = useMemo(() => subject.chapters.flatMap((c) => c.lessons), [subject]);
-  const currentIndex = allLessons.findIndex((l) => l.id === lessonId);
-  const prevLesson = currentIndex > 0 ? allLessons[currentIndex - 1] : null;
-  const nextLesson = currentIndex < allLessons.length - 1 ? allLessons[currentIndex + 1] : null;
-  const lesson = allLessons.find((l) => l.id === lessonId);
+  const { lesson, prevLesson, nextLesson } = useMemo(() => {
+    const idx = allLessons.findIndex((l) => l.id === lessonId);
+    return {
+      lesson: idx >= 0 ? allLessons[idx] : undefined,
+      prevLesson: idx > 0 ? allLessons[idx - 1] : null,
+      nextLesson: idx < allLessons.length - 1 ? allLessons[idx + 1] : null,
+    };
+  }, [allLessons, lessonId]);
 
   useEffect(() => {
     if (!lesson) return;

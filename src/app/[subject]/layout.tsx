@@ -6,6 +6,8 @@ import { SubjectSidebar } from "@/components/layout/SubjectSidebar";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { subjects, SubjectId } from "@/data/subjects";
 
+const validSubjects = new Set(Object.keys(subjects));
+
 export default function SubjectLayout({
   children,
 }: {
@@ -14,7 +16,7 @@ export default function SubjectLayout({
   const params = useParams();
   const subjectId = params.subject as string;
 
-  if (!subjects[subjectId as SubjectId]) {
+  if (!validSubjects.has(subjectId)) {
     notFound();
   }
 
@@ -22,7 +24,7 @@ export default function SubjectLayout({
     <SubjectProvider subjectId={subjectId as SubjectId}>
       <div className="flex min-h-screen">
         <SubjectSidebar />
-        <main className="flex-1 overflow-auto">
+        <main id="main-content" className="flex-1 overflow-auto">
           <ErrorBoundary>{children}</ErrorBoundary>
         </main>
       </div>

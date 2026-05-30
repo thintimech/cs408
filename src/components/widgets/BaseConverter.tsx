@@ -18,13 +18,6 @@ function parseInput(input: string, base: Base): number | null {
   return negative ? -val : val;
 }
 
-function toUnsignedBits(value: number, width: BitWidth): string {
-  if (value >= 0) return value.toString(2).padStart(width, "0");
-  // Two's complement for negative
-  const mask = (1 << width) >>> 0;
-  return ((mask + value) >>> 0).toString(2).padStart(width, "0");
-}
-
 function getComplement(value: number, width: BitWidth) {
   const max = 1 << (width - 1);
   const inRange = value >= -max && value < max;

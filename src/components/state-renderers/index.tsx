@@ -1,35 +1,37 @@
 "use client";
 
-import { AnimatedArrayView } from "./AnimatedArrayView";
-import { HeapTreeView } from "./HeapTreeView";
-import { GraphView } from "./GraphView";
-import { PageReplacementView } from "./PageReplacementView";
-import { DijkstraView } from "./DijkstraView";
-import { PrimKruskalView } from "./PrimKruskalView";
-import { BankerView } from "./BankerView";
-import { ProcessSyncView } from "./ProcessSyncView";
-import { KMPView } from "./KMPView";
-import { BSTView } from "./BSTView";
-import { HuffmanView } from "./HuffmanView";
-import { TableView } from "./TableView";
-import { NextArrayView } from "./NextArrayView";
-import { GanttView } from "./GanttView";
-import { BitFieldView } from "./BitFieldView";
-import { WindowView } from "./WindowView";
-import { DiskView } from "./DiskView";
-import { CongestionView } from "./CongestionView";
-import { ConnectionView } from "./ConnectionView";
-import { StateMachineView } from "./StateMachineView";
-import { QueueView } from "./QueueView";
-import { ProtocolView } from "./ProtocolView";
-import { AddressView } from "./AddressView";
+import { lazy, Suspense } from "react";
+
+const AnimatedArrayView = lazy(() => import("./AnimatedArrayView").then(m => ({ default: m.AnimatedArrayView })));
+const HeapTreeView = lazy(() => import("./HeapTreeView").then(m => ({ default: m.HeapTreeView })));
+const GraphView = lazy(() => import("./GraphView").then(m => ({ default: m.GraphView })));
+const PageReplacementView = lazy(() => import("./PageReplacementView").then(m => ({ default: m.PageReplacementView })));
+const DijkstraView = lazy(() => import("./DijkstraView").then(m => ({ default: m.DijkstraView })));
+const PrimKruskalView = lazy(() => import("./PrimKruskalView").then(m => ({ default: m.PrimKruskalView })));
+const BankerView = lazy(() => import("./BankerView").then(m => ({ default: m.BankerView })));
+const ProcessSyncView = lazy(() => import("./ProcessSyncView").then(m => ({ default: m.ProcessSyncView })));
+const KMPView = lazy(() => import("./KMPView").then(m => ({ default: m.KMPView })));
+const BSTView = lazy(() => import("./BSTView").then(m => ({ default: m.BSTView })));
+const HuffmanView = lazy(() => import("./HuffmanView").then(m => ({ default: m.HuffmanView })));
+const TableView = lazy(() => import("./TableView").then(m => ({ default: m.TableView })));
+const NextArrayView = lazy(() => import("./NextArrayView").then(m => ({ default: m.NextArrayView })));
+const GanttView = lazy(() => import("./GanttView").then(m => ({ default: m.GanttView })));
+const BitFieldView = lazy(() => import("./BitFieldView").then(m => ({ default: m.BitFieldView })));
+const WindowView = lazy(() => import("./WindowView").then(m => ({ default: m.WindowView })));
+const DiskView = lazy(() => import("./DiskView").then(m => ({ default: m.DiskView })));
+const CongestionView = lazy(() => import("./CongestionView").then(m => ({ default: m.CongestionView })));
+const ConnectionView = lazy(() => import("./ConnectionView").then(m => ({ default: m.ConnectionView })));
+const StateMachineView = lazy(() => import("./StateMachineView").then(m => ({ default: m.StateMachineView })));
+const QueueView = lazy(() => import("./QueueView").then(m => ({ default: m.QueueView })));
+const ProtocolView = lazy(() => import("./ProtocolView").then(m => ({ default: m.ProtocolView })));
+const AddressView = lazy(() => import("./AddressView").then(m => ({ default: m.AddressView })));
 
 interface StateRendererProps {
   state: Record<string, unknown>;
   prevState?: Record<string, unknown>;
 }
 
-export function StateRenderer({ state, prevState }: StateRendererProps) {
+function StateRendererInner({ state, prevState }: StateRendererProps) {
   const type = state.type as string | undefined;
 
   if (type === "gantt") return <GanttView state={state} />;
@@ -66,4 +68,12 @@ export function StateRenderer({ state, prevState }: StateRendererProps) {
   if ("array" in state) return <AnimatedArrayView state={state} prevState={prevState} />;
 
   return null;
+}
+
+export function StateRenderer(props: StateRendererProps) {
+  return (
+    <Suspense fallback={<div className="h-20 flex items-center justify-center text-xs text-muted-foreground">加载中...</div>}>
+      <StateRendererInner {...props} />
+    </Suspense>
+  );
 }

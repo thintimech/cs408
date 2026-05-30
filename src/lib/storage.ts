@@ -15,7 +15,7 @@ export function getLessonProgress(storageKey: string, lessonId: string): LessonP
   return all[lessonId] || { lessonId, sectionsRead: [], completed: false };
 }
 
-export function markSectionRead(storageKey: string, lessonId: string, sectionId: string) {
+export function markSectionRead(storageKey: string, lessonId: string, sectionId: string): boolean {
   const all = getProgress(storageKey);
   const current = all[lessonId] || { lessonId, sectionsRead: [], completed: false };
   if (!current.sectionsRead.includes(sectionId)) {
@@ -23,14 +23,24 @@ export function markSectionRead(storageKey: string, lessonId: string, sectionId:
   }
   current.lastVisit = new Date().toISOString();
   all[lessonId] = current;
-  try { localStorage.setItem(storageKey, JSON.stringify(all)); } catch { /* quota exceeded */ }
+  try {
+    localStorage.setItem(storageKey, JSON.stringify(all));
+    return true;
+  } catch {
+    return false;
+  }
 }
 
-export function markLessonCompleted(storageKey: string, lessonId: string) {
+export function markLessonCompleted(storageKey: string, lessonId: string): boolean {
   const all = getProgress(storageKey);
   const current = all[lessonId] || { lessonId, sectionsRead: [], completed: false };
   current.completed = true;
   current.lastVisit = new Date().toISOString();
   all[lessonId] = current;
-  try { localStorage.setItem(storageKey, JSON.stringify(all)); } catch { /* quota exceeded */ }
+  try {
+    localStorage.setItem(storageKey, JSON.stringify(all));
+    return true;
+  } catch {
+    return false;
+  }
 }

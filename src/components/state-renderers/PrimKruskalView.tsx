@@ -11,7 +11,6 @@ export function PrimKruskalView({ state }: PrimKruskalViewProps) {
   const selectedEdges = state.selectedEdges as string[] | undefined;
   const totalWeight = state.totalWeight as number | undefined;
   const note = state.note as string | undefined;
-  const edges = state.edges as string[] | undefined;
   const sortedEdges = state.sortedEdges as string[] | undefined;
   const currentEdge = state.currentEdge as string | undefined;
 

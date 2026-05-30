@@ -12,7 +12,6 @@ export function DiskView({ state }: DiskViewProps) {
   const maxTrack = state.maxTrack as number || 200;
   const caption = state.caption as string | undefined;
 
-  const allPositions = [head, ...requests];
   const min = 0;
   const max = maxTrack;
 

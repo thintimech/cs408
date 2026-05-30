@@ -31,7 +31,6 @@ function layoutTree(root: TreeNode | null, highlight?: number | string, newNode?
 
   const nodes: PositionedNode[] = [];
   const edges: Edge[] = [];
-  let minX = 0;
 
   function inorder(node: TreeNode | null, depth: number, x: { val: number }): void {
     if (!node) return;

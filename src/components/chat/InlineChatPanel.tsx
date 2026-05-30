@@ -77,7 +77,7 @@ export function InlineChatPanel({ context, subject }: InlineChatPanelProps) {
                 { role: "assistant", content: assistantContent },
               ]);
             } catch {
-              // skip malformed SSE chunk
+              // Non-JSON SSE line (e.g. comments or partial chunks) — safe to skip
             }
           }
         }

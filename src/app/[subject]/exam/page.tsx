@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useSubject } from "@/contexts/SubjectContext";
 import { ExamConfig, ExamQuestion, selectQuestions } from "@/lib/exam";
-import { EvaluationResult, Difficulty } from "@/types";
+import { EvaluationResult } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -34,7 +34,9 @@ export default function ExamPage() {
   const [currentIdx, setCurrentIdx] = useState(0);
   const [timeLeft, setTimeLeft] = useState(0);
   const [evaluating, setEvaluating] = useState(false);
+  const [noQuestions, setNoQuestions] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const endTimeRef = useRef<number>(0);
 
   const totalExercises = subject.chapters
     .flatMap((c) => c.lessons)
@@ -42,12 +44,18 @@ export default function ExamPage() {
 
   function startExam() {
     const selected = selectQuestions(subject.chapters, config);
-    if (selected.length === 0) return;
+    if (selected.length === 0) {
+      setNoQuestions(true);
+      return;
+    }
+    setNoQuestions(false);
     setQuestions(selected);
     setAnswers(selected.map(() => ({ text: "", submitted: false })));
     setCurrentIdx(0);
     if (config.timeLimit > 0) {
-      setTimeLeft(config.timeLimit * 60);
+      const totalSeconds = config.timeLimit * 60;
+      setTimeLeft(totalSeconds);
+      endTimeRef.current = Date.now() + totalSeconds * 1000;
     }
     setPhase("session");
   }
@@ -55,14 +63,12 @@ export default function ExamPage() {
   useEffect(() => {
     if (phase !== "session" || config.timeLimit === 0) return;
     timerRef.current = setInterval(() => {
-      setTimeLeft((t) => {
-        if (t <= 1) {
-          clearInterval(timerRef.current!);
-          setPhase("results");
-          return 0;
-        }
-        return t - 1;
-      });
+      const remaining = Math.max(0, Math.round((endTimeRef.current - Date.now()) / 1000));
+      setTimeLeft(remaining);
+      if (remaining <= 0) {
+        clearInterval(timerRef.current!);
+        setPhase("results");
+      }
     }, 1000);
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [phase, config.timeLimit]);
@@ -176,6 +182,9 @@ export default function ExamPage() {
         <button onClick={startExam} disabled={totalExercises === 0} className="w-full py-3 bg-primary text-primary-foreground rounded-md font-medium text-sm hover:bg-primary/90 disabled:opacity-50 flex items-center justify-center gap-2 transition-colors">
           <Play className="h-4 w-4" />开始考试
         </button>
+        {noQuestions && (
+          <p className="text-sm text-red-500 text-center">当前筛选条件下没有可用题目，请调整难度或章节范围。</p>
+        )}
       </div>
     );
   }
@@ -218,6 +227,7 @@ export default function ExamPage() {
                 setAnswers(next);
               }}
               placeholder="在此作答..."
+              aria-label={`第 ${currentIdx + 1} 题答题区域`}
               className="w-full min-h-[150px] bg-muted rounded-md px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-ring resize-y font-mono"
               disabled={ans.submitted}
             />
@@ -229,7 +239,10 @@ export default function ExamPage() {
             )}
             {ans.result && (
               <div className="rounded-md border border-border p-3 text-sm">
-                <span className={`font-medium ${ans.result.verdict === "correct" ? "text-green-500" : ans.result.verdict === "partial" ? "text-yellow-500" : "text-red-500"}`}>
+                <span className={`font-medium inline-flex items-center gap-1 ${ans.result.verdict === "correct" ? "text-green-500" : ans.result.verdict === "partial" ? "text-yellow-500" : "text-red-500"}`}>
+                  {ans.result.verdict === "correct" && <CheckCircle2 className="h-4 w-4" />}
+                  {ans.result.verdict === "partial" && <AlertCircle className="h-4 w-4" />}
+                  {ans.result.verdict === "incorrect" && <XCircle className="h-4 w-4" />}
                   {ans.result.verdict === "correct" ? "正确" : ans.result.verdict === "partial" ? "部分正确" : "错误"}
                 </span>
                 <p className="text-xs mt-1 text-muted-foreground">{ans.result.feedback}</p>
