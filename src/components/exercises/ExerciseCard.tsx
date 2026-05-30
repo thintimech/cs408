@@ -10,6 +10,8 @@ import {
   ChevronDown, ChevronRight, Eye,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { saveExerciseAttempt } from "@/lib/storage";
+import { useSubject } from "@/contexts/SubjectContext";
 
 const difficultyLabel = { easy: "简单", medium: "中等", hard: "困难" };
 const difficultyColor = {
@@ -27,9 +29,11 @@ const collapse = {
 interface ExerciseCardProps {
   exercise: Exercise;
   subject: string;
+  lessonId?: string;
 }
 
-export function ExerciseCard({ exercise, subject }: ExerciseCardProps) {
+export function ExerciseCard({ exercise, subject, lessonId }: ExerciseCardProps) {
+  const subjectCtx = useSubject();
   const [answer, setAnswer] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<EvaluationResult | null>(null);
@@ -54,6 +58,15 @@ export function ExerciseCard({ exercise, subject }: ExerciseCardProps) {
       });
       const data: EvaluationResult = await res.json();
       setResult(data);
+      if (lessonId) {
+        saveExerciseAttempt(subjectCtx.storageKey, {
+          exerciseId: exercise.id,
+          lessonId,
+          exerciseTitle: exercise.title,
+          userAnswer: answer,
+          result: data,
+        });
+      }
     } catch {
       setResult({ verdict: "incorrect", feedback: "网络错误，请稍后重试。", suggestions: [] });
     } finally {

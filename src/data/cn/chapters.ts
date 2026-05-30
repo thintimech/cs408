@@ -1,9 +1,11 @@
 import { Chapter } from "@/types";
 import { architectureLessons } from "./lessons/architecture";
 import { physicalLessons } from "./lessons/physical";
+import { switchingModesLessons } from "./lessons/network-extra";
 import { datalinkLessons } from "./lessons/datalink";
 import { datalinkExtraLessons } from "./lessons/datalink-extra";
 import { networkLessons } from "./lessons/network-layer";
+import { ipMulticastLessons } from "./lessons/network-multicast";
 import { transportLessons } from "./lessons/transport";
 import { applicationLessons } from "./lessons/application";
 
@@ -20,7 +22,7 @@ export const chapters: Chapter[] = [
     name: "物理层",
     description: "通信基础、信道容量、奈奎斯特定理、香农定理、编码与调制技术",
     icon: "Radio",
-    lessons: physicalLessons,
+    lessons: [...physicalLessons, ...switchingModesLessons],
   },
   {
     id: "datalink",
@@ -34,7 +36,7 @@ export const chapters: Chapter[] = [
     name: "网络层",
     description: "IP协议、子网划分、CIDR、路由算法(RIP/OSPF)",
     icon: "Globe",
-    lessons: networkLessons,
+    lessons: [...networkLessons, ...ipMulticastLessons],
   },
   {
     id: "transport",

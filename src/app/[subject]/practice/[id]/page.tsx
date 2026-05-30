@@ -7,6 +7,7 @@ import { PseudoCodeEditor } from "@/components/editor/PseudoCodeEditor";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EvaluationResult } from "@/types";
+import { saveExerciseAttempt } from "@/lib/storage";
 import { Loader2, CheckCircle2, AlertCircle, XCircle, Lightbulb } from "lucide-react";
 
 const difficultyLabel = { easy: "简单", medium: "中等", hard: "困难" };
@@ -16,10 +17,9 @@ export default function PracticePage() {
   const subject = useSubject();
   const exerciseId = params.id as string;
 
-  const exercise = subject.chapters
-    .flatMap((c) => c.lessons)
-    .flatMap((l) => l.exercises || [])
-    .find((e) => e.id === exerciseId);
+  const allLessons = subject.chapters.flatMap((c) => c.lessons);
+  const lessonForExercise = allLessons.find((l) => l.exercises?.some((e) => e.id === exerciseId));
+  const exercise = lessonForExercise?.exercises?.find((e) => e.id === exerciseId);
 
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
@@ -48,6 +48,15 @@ export default function PracticePage() {
       });
       const data: EvaluationResult = await res.json();
       setResult(data);
+      if (lessonForExercise) {
+        saveExerciseAttempt(subject.storageKey, {
+          exerciseId: exercise!.id,
+          lessonId: lessonForExercise.id,
+          exerciseTitle: exercise!.title,
+          userAnswer: code,
+          result: data,
+        });
+      }
     } catch {
       setResult({ verdict: "incorrect", feedback: "网络错误，请检查连接后重试。", suggestions: [] });
     } finally {

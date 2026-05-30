@@ -1,3 +1,5 @@
+import { NextRequest } from "next/server";
+
 const windowMs = 60_000;
 const maxRequests = 20;
 const cleanupInterval = 5 * 60_000;
@@ -11,6 +13,14 @@ function cleanup(now: number) {
   for (const [key, entry] of hits) {
     if (now > entry.resetAt) hits.delete(key);
   }
+}
+
+export function getClientIp(req: NextRequest): string {
+  return (
+    req.headers.get("x-real-ip") ||
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    "unknown"
+  );
 }
 
 export function rateLimit(ip: string): boolean {

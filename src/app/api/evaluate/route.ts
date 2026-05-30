@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { chatCompletion } from "@/lib/deepseek";
 import { subjects, SubjectId } from "@/data/subjects";
-import { rateLimit } from "@/lib/rate-limit";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
 
 const MAX_ANSWER_LENGTH = 5_000;
 const MAX_FIELD_LENGTH = 10_000;
 const VALID_SUBJECTS = new Set(Object.keys(subjects));
 
 export async function POST(req: NextRequest) {
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const ip = getClientIp(req);
   if (!rateLimit(ip)) {
     return NextResponse.json(
       { verdict: "incorrect", feedback: "请求过于频繁，请稍后再试。", suggestions: [] },
@@ -81,7 +81,8 @@ ${userAnswer}
         suggestions: [],
       });
     }
-  } catch {
+  } catch (e) {
+    console.error("[evaluate]", e);
     return NextResponse.json(
       {
         verdict: "incorrect",

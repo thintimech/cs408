@@ -167,6 +167,20 @@ export function SubjectSidebar() {
         </Link>
 
         <Link
+          href={`${basePath}/mistakes`}
+          onClick={() => setOpen(false)}
+          className={cn(
+            "flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors",
+            pathname === `${basePath}/mistakes`
+              ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+              : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+          )}
+        >
+          <AlertTriangle className="h-4 w-4 shrink-0" />
+          错题本
+        </Link>
+
+        <Link
           href={`${basePath}/exam`}
           onClick={() => setOpen(false)}
           className={cn(

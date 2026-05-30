@@ -89,6 +89,44 @@ bool ListInsert(SqList *L, int i, int e) {
 - 平均情况：假设每个位置等概率，平均移动 n/2 个元素，**O(n)**`,
       },
       {
+        id: "seq-list-insert-walkthrough",
+        title: "顺序表插入动画演示",
+        type: "walkthrough",
+        content: "在顺序表 [10, 20, 30, 40, 50] 的第 3 个位置插入元素 25。观察元素从后往前逐个后移的过程。",
+        steps: [
+          {
+            description: "初始状态：顺序表有5个元素，要在位置3插入25",
+            pseudocode: "L.data = [10, 20, 30, 40, 50], L.length = 5\n插入位置 i = 3, 插入元素 e = 25",
+            state: { array: [10, 20, 30, 40, 50], highlight: [2] },
+          },
+          {
+            description: "第1步：将第5个元素(50)后移到第6个位置",
+            pseudocode: "for j = 5 down to 3:\n  L.data[j] = L.data[j-1]  // j=5",
+            state: { array: [10, 20, 30, 40, 50, 50], highlight: [4, 5] },
+          },
+          {
+            description: "第2步：将第4个元素(40)后移到第5个位置",
+            pseudocode: "for j = 5 down to 3:\n  L.data[j] = L.data[j-1]  // j=4",
+            state: { array: [10, 20, 30, 40, 40, 50], highlight: [3, 4] },
+          },
+          {
+            description: "第3步：将第3个元素(30)后移到第4个位置",
+            pseudocode: "for j = 5 down to 3:\n  L.data[j] = L.data[j-1]  // j=3",
+            state: { array: [10, 20, 30, 30, 40, 50], highlight: [2, 3] },
+          },
+          {
+            description: "第4步：在第3个位置写入新元素25",
+            pseudocode: "L.data[i-1] = e  // L.data[2] = 25",
+            state: { array: [10, 20, 25, 30, 40, 50], highlight: [2] },
+          },
+          {
+            description: "插入完成！表长+1，新元素25已在第3个位置",
+            pseudocode: "L.length++  // length = 6",
+            state: { array: [10, 20, 25, 30, 40, 50], sorted: [0, 1, 2, 3, 4, 5] },
+          },
+        ],
+      },
+      {
         id: "seq-list-delete",
         title: "删除操作",
         type: "detail",
@@ -317,6 +355,37 @@ LinkList HeadInsert(LinkList L) {
 **应用**：链表逆置可以用头插法思想——把原链表的结点逐个摘下来，头插到新链表。
 
 时间复杂度：O(n)`,
+      },
+      {
+        id: "head-insert-walkthrough",
+        title: "头插法建表动画演示",
+        type: "walkthrough",
+        content: "用头插法依次插入元素 1, 2, 3，观察链表如何形成逆序。",
+        steps: [
+          {
+            description: "初始状态：只有头结点，链表为空",
+            state: { queue: ["H"], front: "head", rear: "null", action: "空链表，H为头结点" },
+          },
+          {
+            description: "插入元素1：新节点指向头结点的下一个(null)，头结点指向新节点",
+            pseudocode: "s = new Node(1)\ns->next = H->next  // null\nH->next = s",
+            state: { queue: ["H", "1"], front: "head", rear: "null", action: "插入1" },
+          },
+          {
+            description: "插入元素2：新节点指向头结点的下一个(1)，头结点指向新节点",
+            pseudocode: "s = new Node(2)\ns->next = H->next  // 指向1\nH->next = s",
+            state: { queue: ["H", "2", "1"], front: "head", rear: "null", action: "插入2 → 2在1前面" },
+          },
+          {
+            description: "插入元素3：新节点指向头结点的下一个(2)，头结点指向新节点",
+            pseudocode: "s = new Node(3)\ns->next = H->next  // 指向2\nH->next = s",
+            state: { queue: ["H", "3", "2", "1"], front: "head", rear: "null", action: "插入3 → 3在2前面" },
+          },
+          {
+            description: "建表完成！输入顺序1,2,3 → 链表顺序3,2,1（逆序）",
+            state: { queue: ["H", "3", "2", "1"], front: "head", rear: "null", action: "头插法结果：逆序！", output: ["读取顺序: 3→2→1"] },
+          },
+        ],
       },
       {
         id: "tail-insert",

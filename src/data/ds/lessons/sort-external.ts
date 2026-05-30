@@ -163,6 +163,81 @@ k路归并每次需要从 k 个段的当前元素中选出最小值：
 败者树在实现上更简洁，因此实际中更常用。`,
       },
       {
+        id: "k-way-merge-walkthrough",
+        title: "3路归并动画演示",
+        type: "walkthrough",
+        content:
+          "3个有序归并段进行3路归并，每次从3个段的当前元素中选最小的输出。",
+        steps: [
+          {
+            description: "初始状态：3个有序归并段准备归并",
+            pseudocode:
+              "段1: [3, 8, 12]\n段2: [1, 9, 16]\n段3: [5, 7, 20]\n输出: []",
+            state: {
+              array: [3, 8, 12, 1, 9, 16, 5, 7, 20],
+              highlight: [0, 3, 6],
+            },
+          },
+          {
+            description:
+              "比较三段首元素：3, 1, 5 → 最小值1（来自段2），输出1",
+            pseudocode: "比较: min(3, 1, 5) = 1\n段2指针后移\n输出: [1]",
+            state: {
+              array: [3, 8, 12, 9, 16, 5, 7, 20],
+              highlight: [0, 3, 5],
+              sorted: [0],
+            },
+          },
+          {
+            description: "比较：3, 9, 5 → 最小值3（来自段1），输出3",
+            pseudocode: "比较: min(3, 9, 5) = 3\n段1指针后移\n输出: [1, 3]",
+            state: {
+              array: [8, 12, 9, 16, 5, 7, 20],
+              highlight: [0, 2, 4],
+              sorted: [0, 1],
+            },
+          },
+          {
+            description: "比较：8, 9, 5 → 最小值5（来自段3），输出5",
+            pseudocode: "比较: min(8, 9, 5) = 5\n段3指针后移\n输出: [1, 3, 5]",
+            state: {
+              array: [8, 12, 9, 16, 7, 20],
+              highlight: [0, 2, 4],
+              sorted: [0, 1, 2],
+            },
+          },
+          {
+            description: "比较：8, 9, 7 → 最小值7（来自段3），输出7",
+            pseudocode:
+              "比较: min(8, 9, 7) = 7\n段3指针后移\n输出: [1, 3, 5, 7]",
+            state: {
+              array: [8, 12, 9, 16, 20],
+              highlight: [0, 2, 4],
+              sorted: [0, 1, 2, 3],
+            },
+          },
+          {
+            description: "比较：8, 9, 20 → 最小值8（来自段1），输出8",
+            pseudocode:
+              "比较: min(8, 9, 20) = 8\n段1指针后移\n输出: [1, 3, 5, 7, 8]",
+            state: {
+              array: [12, 9, 16, 20],
+              highlight: [0, 1, 3],
+              sorted: [0, 1, 2, 3, 4],
+            },
+          },
+          {
+            description: "继续归并...最终得到完整有序序列",
+            pseudocode:
+              "最终输出: [1, 3, 5, 7, 8, 9, 12, 16, 20]\n3路归并完成！",
+            state: {
+              array: [1, 3, 5, 7, 8, 9, 12, 16, 20],
+              sorted: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+            },
+          },
+        ],
+      },
+      {
         id: "external-replacement-selection",
         title: "置换-选择排序",
         type: "concept",

@@ -76,6 +76,44 @@ DMA控制器直接在IO设备和内存之间传输数据，无需CPU逐字干预
 | 通道 | 极低(每组) | 一组块 | 设备->内存 | 最高效但硬件成本高 |`,
       },
       {
+        id: "interrupt-io-walkthrough",
+        title: "中断驱动I/O时序演示",
+        type: "walkthrough",
+        content: "CPU发起I/O请求后继续执行其他任务，设备完成后通过中断通知CPU。",
+        steps: [
+          {
+            description: "CPU执行进程A，需要读取磁盘数据",
+            pseudocode: "CPU: 执行进程A\nI/O设备: 空闲",
+            state: { type: "gantt", processes: [{ name: "CPU", segments: [{ start: 0, end: 3, label: "进程A", color: "blue" }] }, { name: "磁盘", segments: [] }], currentTime: 3 },
+          },
+          {
+            description: "CPU发出I/O命令，启动磁盘读操作",
+            pseudocode: "CPU → I/O控制器: 读磁盘块#100\nCPU: 切换到进程B",
+            state: { type: "gantt", processes: [{ name: "CPU", segments: [{ start: 0, end: 3, label: "进程A", color: "blue" }, { start: 3, end: 4, label: "发I/O命令", color: "orange" }] }, { name: "磁盘", segments: [{ start: 4, end: 4, label: "启动", color: "green" }] }], currentTime: 4 },
+          },
+          {
+            description: "CPU转去执行进程B，磁盘同时工作（并行）",
+            pseudocode: "CPU: 执行进程B（与I/O并行）\n磁盘: 寻道 + 读数据",
+            state: { type: "gantt", processes: [{ name: "CPU", segments: [{ start: 0, end: 3, label: "进程A", color: "blue" }, { start: 3, end: 4, label: "发I/O命令", color: "orange" }, { start: 4, end: 8, label: "进程B", color: "purple" }] }, { name: "磁盘", segments: [{ start: 4, end: 8, label: "读数据", color: "green" }] }], currentTime: 8 },
+          },
+          {
+            description: "磁盘完成读操作，发出中断请求",
+            pseudocode: "磁盘 → CPU: 中断请求（数据就绪）\nCPU: 暂停进程B，响应中断",
+            state: { type: "gantt", processes: [{ name: "CPU", segments: [{ start: 0, end: 3, label: "进程A", color: "blue" }, { start: 3, end: 4, label: "发I/O命令", color: "orange" }, { start: 4, end: 8, label: "进程B", color: "purple" }, { start: 8, end: 9, label: "中断!", color: "red" }] }, { name: "磁盘", segments: [{ start: 4, end: 8, label: "读数据", color: "green" }] }], currentTime: 9 },
+          },
+          {
+            description: "CPU执行中断处理程序，将数据从控制器缓冲区传送到内存",
+            pseudocode: "中断处理:\n  保存进程B现场\n  将数据从I/O缓冲区→内存\n  唤醒进程A",
+            state: { type: "gantt", processes: [{ name: "CPU", segments: [{ start: 0, end: 3, label: "进程A", color: "blue" }, { start: 3, end: 4, label: "发I/O命令", color: "orange" }, { start: 4, end: 8, label: "进程B", color: "purple" }, { start: 8, end: 10, label: "中断处理", color: "red" }] }, { name: "磁盘", segments: [{ start: 4, end: 8, label: "读数据", color: "green" }] }], currentTime: 10 },
+          },
+          {
+            description: "中断处理完成，CPU恢复执行（可能切回进程A使用数据）",
+            pseudocode: "恢复进程A（数据已就绪）\n或继续进程B（取决于调度策略）",
+            state: { type: "gantt", processes: [{ name: "CPU", segments: [{ start: 0, end: 3, label: "进程A", color: "blue" }, { start: 3, end: 4, label: "发I/O命令", color: "orange" }, { start: 4, end: 8, label: "进程B", color: "purple" }, { start: 8, end: 10, label: "中断处理", color: "red" }, { start: 10, end: 13, label: "进程A(续)", color: "blue" }] }, { name: "磁盘", segments: [{ start: 4, end: 8, label: "读数据", color: "green" }] }], currentTime: 13 },
+          },
+        ],
+      },
+      {
         id: "dma-detail",
         title: "DMA工作原理",
         type: "detail",

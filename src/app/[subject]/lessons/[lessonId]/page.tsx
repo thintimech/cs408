@@ -367,7 +367,7 @@ export default function LessonPage() {
             <div className="space-y-4">
               <h2 className="text-lg font-semibold">练习</h2>
               {lesson.exercises.map((ex) => (
-                <ExerciseCard key={ex.id} exercise={ex} subject={subject.id} />
+                <ExerciseCard key={ex.id} exercise={ex} subject={subject.id} lessonId={lessonId} />
               ))}
             </div>
           )}

@@ -51,6 +51,7 @@ export function PseudoCodeEditor({ value, onChange, placeholder }: PseudoCodeEdi
     return () => {
       view.destroy();
     };
+    // Intentionally empty deps: editor instance is created once; onChange is captured via closure in the updateListener
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

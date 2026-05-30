@@ -1,14 +1,14 @@
 import { NextRequest } from "next/server";
 import { streamChat } from "@/lib/deepseek";
 import { subjects, SubjectId } from "@/data/subjects";
-import { rateLimit } from "@/lib/rate-limit";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
 
 const MAX_MESSAGES = 50;
 const MAX_CONTENT_LENGTH = 10_000;
 const VALID_SUBJECTS = new Set(Object.keys(subjects));
 
 export async function POST(req: NextRequest) {
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const ip = getClientIp(req);
   if (!rateLimit(ip)) {
     return new Response("请求过于频繁，请稍后再试", { status: 429 });
   }
@@ -58,7 +58,8 @@ export async function POST(req: NextRequest) {
         Connection: "keep-alive",
       },
     });
-  } catch {
+  } catch (e) {
+    console.error("[chat]", e);
     return new Response("服务暂时不可用，请稍后重试", { status: 500 });
   }
 }

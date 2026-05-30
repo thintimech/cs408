@@ -62,6 +62,15 @@ export interface EvaluationResult {
   suggestions: string[];
 }
 
+export interface ExerciseAttempt {
+  exerciseId: string;
+  lessonId: string;
+  exerciseTitle: string;
+  userAnswer: string;
+  result: EvaluationResult;
+  timestamp: string;
+}
+
 export interface LessonProgress {
   lessonId: string;
   sectionsRead: string[]; // 已阅读的 section id
