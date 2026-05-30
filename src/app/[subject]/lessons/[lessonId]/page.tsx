@@ -201,7 +201,7 @@ export default function LessonPage() {
 
   return (
     <div className="relative h-dvh">
-      <div className="h-full overflow-auto p-6 md:p-8">
+      <div className={cn("h-full overflow-auto p-6 md:p-8 transition-[padding] duration-300", showChat && "md:pr-[21rem]")}>
         <div className="max-w-3xl mx-auto space-y-6">
           {currentChapter && (
             <Link href={`/${subject.id}/chapters/${currentChapter.id}`} className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
