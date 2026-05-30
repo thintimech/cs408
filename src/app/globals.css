@@ -137,3 +137,25 @@
     @apply font-sans;
   }
 }
+
+@keyframes float-subtle {
+  0%, 100% { transform: translateY(0); opacity: 0.06; }
+  50% { transform: translateY(-3px); opacity: 0.09; }
+}
+
+@keyframes success-ring {
+  0% { box-shadow: 0 0 0 0 oklch(0.55 0.18 155 / 0.4); }
+  100% { box-shadow: 0 0 0 12px oklch(0.55 0.18 155 / 0); }
+}
+
+@keyframes dot-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.5); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-float-subtle,
+  .animate-dot-pulse {
+    animation: none !important;
+  }
+}

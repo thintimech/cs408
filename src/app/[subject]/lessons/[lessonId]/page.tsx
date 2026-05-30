@@ -158,6 +158,8 @@ export default function LessonPage() {
   const [showChat, setShowChat] = useState(false);
   const [readSections, setReadSections] = useState<string[]>([]);
   const [activeSection, setActiveSection] = useState(0);
+  const [justRead, setJustRead] = useState<Set<string>>(new Set());
+  const initialReadRef = useRef<Set<string> | null>(null);
 
   const allLessons = useMemo(() => subject.chapters.flatMap((c) => c.lessons), [subject]);
   const currentIndex = allLessons.findIndex((l) => l.id === lessonId);
@@ -169,6 +171,7 @@ export default function LessonPage() {
     if (!lesson) return;
     const progress = getLessonProgress(subject.storageKey, lesson.id);
     setReadSections(progress.sectionsRead);
+    initialReadRef.current = new Set(progress.sectionsRead);
   }, [lesson, subject.storageKey]);
 
   useEffect(() => {
@@ -183,6 +186,9 @@ export default function LessonPage() {
     if (!readSections.includes(sectionId)) {
       markSectionRead(subject.storageKey, lessonId, sectionId);
       setReadSections((prev) => [...prev, sectionId]);
+      if (initialReadRef.current && !initialReadRef.current.has(sectionId)) {
+        setJustRead((prev) => new Set(prev).add(sectionId));
+      }
     }
   }
 
@@ -251,6 +257,7 @@ export default function LessonPage() {
               {lesson.sections.map((s, i) => {
                 const isRead = readSections.includes(s.id);
                 const isActive = i === activeSection;
+                const isNewlyRead = justRead.has(s.id);
                 return (
                   <div key={s.id} className="flex flex-col items-center">
                     <button
@@ -262,7 +269,8 @@ export default function LessonPage() {
                           ? "border-[var(--subject-color)] bg-[var(--subject-color)] scale-125"
                           : isRead
                             ? "border-green-500 bg-green-500"
-                            : "border-border bg-background hover:border-[var(--subject-color)]"
+                            : "border-border bg-background hover:border-[var(--subject-color)]",
+                        isNewlyRead && !isActive && "animate-[dot-pulse_0.3s_ease-out]"
                       )}
                       title={s.title}
                     />

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Exercise, EvaluationResult } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,12 +9,19 @@ import {
   Loader2, CheckCircle2, AlertCircle, XCircle, Lightbulb,
   ChevronDown, ChevronRight, Eye,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const difficultyLabel = { easy: "简单", medium: "中等", hard: "困难" };
 const difficultyColor = {
   easy: "bg-green-500/10 text-green-600 border-green-500/20",
   medium: "bg-yellow-500/10 text-yellow-600 border-yellow-500/20",
   hard: "bg-red-500/10 text-red-600 border-red-500/20",
+};
+
+const collapse = {
+  initial: { opacity: 0, height: 0, overflow: "hidden" as const },
+  animate: { opacity: 1, height: "auto" as const, overflow: "visible" as const, transition: { duration: 0.2, ease: [0.25, 0.1, 0.25, 1] as const } },
+  exit: { opacity: 0, height: 0, overflow: "hidden" as const, transition: { duration: 0.15, ease: [0.42, 0, 1, 1] as const } },
 };
 
 interface ExerciseCardProps {
@@ -80,11 +88,13 @@ export function ExerciseCard({ exercise, subject }: ExerciseCardProps) {
           {showHints ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
         </button>
 
-        {showHints && (
-          <ul className="text-xs text-muted-foreground space-y-1 pl-5 border-l-2 border-muted">
-            {exercise.hints.map((hint, i) => <li key={i}>{i + 1}. {hint}</li>)}
-          </ul>
-        )}
+        <AnimatePresence>
+          {showHints && (
+            <motion.ul key="hints" variants={collapse} initial="initial" animate="animate" exit="exit" className="text-xs text-muted-foreground space-y-1 pl-5 border-l-2 border-muted">
+              {exercise.hints.map((hint, i) => <li key={i}>{i + 1}. {hint}</li>)}
+            </motion.ul>
+          )}
+        </AnimatePresence>
 
         <textarea
           value={answer}
@@ -112,29 +122,44 @@ export function ExerciseCard({ exercise, subject }: ExerciseCardProps) {
           </button>
         </div>
 
-        {result && (
-          <div className="rounded-md border border-border p-3 space-y-2">
-            <div className="flex items-center gap-2 text-sm font-medium">
-              {(() => { const Icon = VerdictIcon[result.verdict]; return <Icon className={`h-4 w-4 ${verdictColor[result.verdict]}`} />; })()}
-              {verdictLabel[result.verdict]}
-            </div>
-            <p className="text-xs text-foreground/80">{result.feedback}</p>
-            {result.suggestions.length > 0 && (
-              <ul className="text-xs text-muted-foreground space-y-0.5">
-                {result.suggestions.map((s, i) => <li key={i}>• {s}</li>)}
-              </ul>
-            )}
-          </div>
-        )}
+        <AnimatePresence>
+          {result && (
+            <motion.div key="result" variants={collapse} initial="initial" animate="animate" exit="exit"
+              className={cn("rounded-md border border-border p-3 space-y-2", result.verdict === "correct" && "animate-[success-ring_0.6s_ease-out]")}
+            >
+              <div className="flex items-center gap-2 text-sm font-medium">
+                {(() => {
+                  const Icon = VerdictIcon[result.verdict];
+                  return result.verdict === "correct" ? (
+                    <motion.span initial={{ scale: 1 }} animate={{ scale: [1, 1.4, 1] }} transition={{ duration: 0.4 }}>
+                      <Icon className={`h-4 w-4 ${verdictColor[result.verdict]}`} />
+                    </motion.span>
+                  ) : (
+                    <Icon className={`h-4 w-4 ${verdictColor[result.verdict]}`} />
+                  );
+                })()}
+                {verdictLabel[result.verdict]}
+              </div>
+              <p className="text-xs text-foreground/80">{result.feedback}</p>
+              {result.suggestions.length > 0 && (
+                <ul className="text-xs text-muted-foreground space-y-0.5">
+                  {result.suggestions.map((s, i) => <li key={i}>• {s}</li>)}
+                </ul>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        {showSolution && (
-          <div className="rounded-md border border-border bg-muted/50 p-3">
-            <p className="text-xs font-medium mb-1 text-muted-foreground">参考答案：</p>
-            <pre className="whitespace-pre-wrap text-xs leading-relaxed font-mono">
-              {exercise.referenceSolution}
-            </pre>
-          </div>
-        )}
+        <AnimatePresence>
+          {showSolution && (
+            <motion.div key="solution" variants={collapse} initial="initial" animate="animate" exit="exit" className="rounded-md border border-border bg-muted/50 p-3">
+              <p className="text-xs font-medium mb-1 text-muted-foreground">参考答案：</p>
+              <pre className="whitespace-pre-wrap text-xs leading-relaxed font-mono">
+                {exercise.referenceSolution}
+              </pre>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </CardContent>
     </Card>
   );

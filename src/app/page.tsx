@@ -57,7 +57,7 @@ export default function HomePage() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          {Object.values(subjects).map((config) => {
+          {Object.values(subjects).map((config, index) => {
             const Icon = subjectIcons[config.id];
             const s = stats[config.id];
             const pct = s && s.total > 0 ? Math.round((s.completed / s.total) * 100) : 0;
@@ -68,7 +68,11 @@ export default function HomePage() {
                   style={{ borderTopWidth: "3px", borderTopColor: `var(--subject-${config.id})` } as React.CSSProperties}
                 >
                   {/* Background pattern */}
-                  <svg className="absolute top-2 right-2 w-20 h-20 opacity-[0.06] group-hover:opacity-[0.12] transition-opacity" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <svg
+                    className="absolute top-2 right-2 w-20 h-20 group-hover:opacity-[0.12] transition-opacity animate-[float-subtle_7s_ease-in-out_infinite]"
+                    style={{ animationDelay: `${index * 1.5}s` }}
+                    viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.5"
+                  >
                     <path d={subjectPatterns[config.id]} />
                   </svg>
 

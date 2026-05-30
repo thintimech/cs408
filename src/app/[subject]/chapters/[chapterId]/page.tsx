@@ -8,6 +8,16 @@ import { useEffect, useState } from "react";
 import { BookOpen, CheckCircle2, FileText } from "lucide-react";
 import { LessonProgress } from "@/types";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
+
+const containerVariants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.06 } },
+};
+const cardVariants = {
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.25, ease: [0.25, 0.1, 0.25, 1] as const } },
+};
 
 export default function ChapterPage() {
   const params = useParams();
@@ -53,7 +63,7 @@ export default function ChapterPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <motion.div className="grid grid-cols-1 sm:grid-cols-2 gap-4" variants={containerVariants} initial="hidden" animate="show">
         {chapter.lessons.map((lesson, index) => {
           const lp = progress[lesson.id];
           const isCompleted = lp?.completed;
@@ -62,7 +72,8 @@ export default function ChapterPage() {
           const lessonPct = totalSections > 0 ? Math.round((sectionsRead / totalSections) * 100) : 0;
 
           return (
-            <Link key={lesson.id} href={`/${subject.id}/lessons/${lesson.id}`}>
+            <motion.div key={lesson.id} variants={cardVariants}>
+            <Link href={`/${subject.id}/lessons/${lesson.id}`}>
               <div className={cn(
                 "group rounded-lg border p-4 h-full transition-all hover:shadow-md hover:border-[var(--subject-color)]/50",
                 isCompleted ? "border-green-500/30 bg-green-500/5" : "border-border"
@@ -104,9 +115,10 @@ export default function ChapterPage() {
                 )}
               </div>
             </Link>
+            </motion.div>
           );
         })}
-      </div>
+      </motion.div>
     </div>
   );
 }
